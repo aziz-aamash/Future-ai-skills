@@ -29,7 +29,7 @@ model AdminUser {
   successStories SuccessStory[]
   teamMembers    TeamMember[]
   blogPosts      BlogPost[]
-  mediaUploads   MediaUpload[]
+  
 
   @@map("admin_users")
 }
@@ -65,10 +65,11 @@ model Course {
   category       String?  @db.VarChar(100)
   duration       String?  @db.VarChar(50)
   description    String?
+  courseOutline  String? @map("course_outline")
   thumbnailImage String?  @map("thumbnail_image") @db.VarChar(255)
   rating         Decimal? @db.Decimal(2, 1)
   reviewCount    Int      @default(0) @map("review_count")
-  isFeatured     Boolean  @default(false) @map("is_featured")
+  
   isActive       Boolean  @default(true) @map("is_active")
   displayOrder   Int      @default(0) @map("display_order")
 
@@ -78,25 +79,14 @@ model Course {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  modules        CourseModule[]
+  
   successStories SuccessStory[]
 
-  @@index([isActive, isFeatured])
+  @@index([isActive])
   @@index([category])
   @@map("courses")
 }
 
-model CourseModule {
-  id                Int     @id @default(autoincrement())
-  courseId          Int     @map("course_id")
-  course            Course  @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  moduleTitle       String  @map("module_title") @db.VarChar(150)
-  moduleDescription String? @map("module_description")
-  moduleDuration    String? @map("module_duration") @db.VarChar(50)
-  moduleOrder       Int     @default(0) @map("module_order")
-
-  @@map("course_modules")
-}
 
 // ------------------------------------------------------------
 // 4. SUCCESS STORIES
@@ -185,17 +175,3 @@ model ContactSubmission {
   @@map("contact_submissions")
 }
 
-// ------------------------------------------------------------
-// 8. MEDIA LIBRARY
-// ------------------------------------------------------------
-model MediaUpload {
-  id         Int        @id @default(autoincrement())
-  fileUrl    String     @map("file_url") @db.VarChar(255)
-  fileType   String?    @map("file_type") @db.VarChar(50)
-  altText    String?    @map("alt_text") @db.VarChar(255)
-  uploadedBy Int?       @map("uploaded_by")
-  admin      AdminUser? @relation(fields: [uploadedBy], references: [id])
-  createdAt  DateTime   @default(now()) @map("created_at")
-
-  @@map("media_uploads")
-}

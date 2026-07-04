@@ -15,31 +15,32 @@ function slugify(text) {
 // Query params: ?featured=true  ?category=E-Commerce
 // ------------------------------------------------------------
 exports.getAllCourses = asyncHandler(async (req, res) => {
-  const { featured, category } = req.query;
+  const { category } = req.query;
 
   const courses = await prisma.course.findMany({
     where: {
       isActive: true,
-      ...(featured === 'true' ? { isFeatured: true } : {}),
       ...(category ? { category } : {}),
     },
-    orderBy: { displayOrder: 'asc' },
+    orderBy: {
+      displayOrder: "asc",
+    },
   });
 
   res.json(courses);
 });
-
 // ------------------------------------------------------------
 // PUBLIC: GET /api/courses/:slug
 // ------------------------------------------------------------
 exports.getCourseBySlug = asyncHandler(async (req, res) => {
   const course = await prisma.course.findUnique({
-    where: { slug: req.params.slug },
-    include: { modules: { orderBy: { moduleOrder: 'asc' } } },
+    where: {
+      slug: req.params.slug,
+    },
   });
 
   if (!course) {
-    const err = new Error('Course not found');
+    const err = new Error("Course not found");
     err.statusCode = 404;
     throw err;
   }
@@ -54,12 +55,14 @@ exports.createCourse = asyncHandler(async (req, res) => {
   const slug = slugify(req.body.title);
 
   const course = await prisma.course.create({
-    data: { ...req.body, slug },
+    data: {
+      ...req.body,
+      slug,
+    },
   });
 
   res.status(201).json(course);
 });
-
 // ------------------------------------------------------------
 // ADMIN: PUT /api/admin/courses/:id
 // ------------------------------------------------------------

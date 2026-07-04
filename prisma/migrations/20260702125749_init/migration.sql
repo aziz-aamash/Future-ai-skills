@@ -36,10 +36,10 @@ CREATE TABLE "courses" (
     "category" VARCHAR(100),
     "duration" VARCHAR(50),
     "description" TEXT,
+    "course_outline" TEXT,
     "thumbnail_image" VARCHAR(255),
     "rating" DECIMAL(2,1),
     "review_count" INTEGER NOT NULL DEFAULT 0,
-    "is_featured" BOOLEAN NOT NULL DEFAULT false,
     "is_active" BOOLEAN NOT NULL DEFAULT true,
     "display_order" INTEGER NOT NULL DEFAULT 0,
     "created_by" INTEGER,
@@ -47,18 +47,6 @@ CREATE TABLE "courses" (
     "updated_at" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "courses_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "course_modules" (
-    "id" SERIAL NOT NULL,
-    "course_id" INTEGER NOT NULL,
-    "module_title" VARCHAR(150) NOT NULL,
-    "module_description" TEXT,
-    "module_duration" VARCHAR(50),
-    "module_order" INTEGER NOT NULL DEFAULT 0,
-
-    CONSTRAINT "course_modules_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -128,18 +116,6 @@ CREATE TABLE "contact_submissions" (
     CONSTRAINT "contact_submissions_pkey" PRIMARY KEY ("id")
 );
 
--- CreateTable
-CREATE TABLE "media_uploads" (
-    "id" SERIAL NOT NULL,
-    "file_url" VARCHAR(255) NOT NULL,
-    "file_type" VARCHAR(50),
-    "alt_text" VARCHAR(255),
-    "uploaded_by" INTEGER,
-    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-
-    CONSTRAINT "media_uploads_pkey" PRIMARY KEY ("id")
-);
-
 -- CreateIndex
 CREATE UNIQUE INDEX "admin_users_username_key" ON "admin_users"("username");
 
@@ -150,7 +126,7 @@ CREATE UNIQUE INDEX "admin_users_email_key" ON "admin_users"("email");
 CREATE UNIQUE INDEX "courses_slug_key" ON "courses"("slug");
 
 -- CreateIndex
-CREATE INDEX "courses_is_active_is_featured_idx" ON "courses"("is_active", "is_featured");
+CREATE INDEX "courses_is_active_idx" ON "courses"("is_active");
 
 -- CreateIndex
 CREATE INDEX "courses_category_idx" ON "courses"("category");
@@ -177,9 +153,6 @@ ALTER TABLE "announcements" ADD CONSTRAINT "announcements_created_by_fkey" FOREI
 ALTER TABLE "courses" ADD CONSTRAINT "courses_created_by_fkey" FOREIGN KEY ("created_by") REFERENCES "admin_users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "course_modules" ADD CONSTRAINT "course_modules_course_id_fkey" FOREIGN KEY ("course_id") REFERENCES "courses"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE "success_stories" ADD CONSTRAINT "success_stories_course_id_fkey" FOREIGN KEY ("course_id") REFERENCES "courses"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -190,6 +163,3 @@ ALTER TABLE "team_members" ADD CONSTRAINT "team_members_created_by_fkey" FOREIGN
 
 -- AddForeignKey
 ALTER TABLE "blog_posts" ADD CONSTRAINT "blog_posts_author_id_fkey" FOREIGN KEY ("author_id") REFERENCES "admin_users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "media_uploads" ADD CONSTRAINT "media_uploads_uploaded_by_fkey" FOREIGN KEY ("uploaded_by") REFERENCES "admin_users"("id") ON DELETE SET NULL ON UPDATE CASCADE;

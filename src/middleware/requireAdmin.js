@@ -1,22 +1,32 @@
-const jwt = require('jsonwebtoken');
+const jwt = require("jsonwebtoken");
 
-// Protects admin routes. Expects: Authorization: Bearer <token>
-function requireAdmin(req, res, next) {
-  const authHeader = req.headers.authorization;
+const requireAdmin = (req, res, next) => {
+  const token = req.cookies.token;
 
-  if (!authHeader?.startsWith('Bearer ')) {
-    return res.status(401).json({ success: false, message: 'No token provided' });
+  if (!token) {
+    return res.status(401).json({
+      success: false,
+      message: "Not authenticated",
+    });
   }
-
-  const token = authHeader.split(' ')[1];
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.admin = decoded; // { adminId, username }
+
+    // Normalize decoded payload -> req.admin.id
+    req.admin = {
+      id: decoded.adminId,
+      username: decoded.username,
+      role: decoded.role,
+    };
+
     next();
   } catch (err) {
-    return res.status(401).json({ success: false, message: 'Invalid or expired token' });
+    return res.status(401).json({
+      success: false,
+      message: "Invalid or expired token",
+    });
   }
-}
+};
 
 module.exports = requireAdmin;
