@@ -146,21 +146,21 @@ export const ENTITIES: Record<string, EntityConfig> = {
       { key: "title", label: "Title", primary: true, sub: "slug" },
       { key: "category", label: "Category" },
       { key: "status", label: "Status", render: "draftpill" },
-      { key: "published_at", label: "Published Date" }
+      { key: "publishedAt", label: "Published Date" }
     ],
     fields: [
       { name: "title", label: "Title", type: "text", required: true },
-      { name: "slug", label: "Slug", type: "text", required: true, hint: "e.g. future-of-ai-2026" },
+      { name: "slug", label: "Slug", type: "text", required: true, hint: "e.g. future-of-ai-2026 — leave blank to auto-generate from title" },
       {
         name: "category",
         label: "Category",
         type: "select",
-        options: ["Artificial Intelligence", "Tech Trends", "Programming", "Machine Learning", "General"],
+        options: ["Content", "Marketing", "Design", "Freelancing", "E-commerce"],
         required: true
       },
       { name: "status", label: "Status", type: "select", options: ["draft", "published"], default: "draft" },
-      { name: "image_url", label: "Featured Image URL", type: "text" },
-      { name: "summary", label: "Summary", type: "textarea", hint: "Short excerpt shown on the blog feed index grid." },
+      { name: "featuredImage", label: "Featured Image URL", type: "text" },
+      { name: "excerpt", label: "Excerpt", type: "textarea", hint: "Short excerpt shown on the blog feed index grid." },
       { name: "content", label: "Body Content", type: "textarea", rows: 12 }
     ]
   },

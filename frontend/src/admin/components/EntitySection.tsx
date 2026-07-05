@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useData } from "../context/DataContext";
 import { useToast } from "../context/ToastContext";
 import { ENTITIES, singularize } from "../config/entities";
@@ -12,7 +12,7 @@ interface Props {
 }
 
 export default function EntitySection({ section }: Props) {
-  const { db, addRecord, updateRecord, deleteRecord } = useData();
+  const { db, addRecord, updateRecord, deleteRecord, refreshBlogPostsAdmin } = useData();
   const { show } = useToast();
   const entity = ENTITIES[section];
   const rows = db[section] as unknown as AnyRecord[];
@@ -20,6 +20,15 @@ export default function EntitySection({ section }: Props) {
   const [editingId, setEditingId] = useState<number | null | "new">(null);
 
   const label = singularize(entity.label);
+
+  // Blog posts load published-only on app mount (public-safe). The admin
+  // panel needs the FULL list including drafts, so pull it the moment
+  // this section is actually opened by a logged-in admin.
+  useEffect(() => {
+    if (section === "blog_posts") {
+      refreshBlogPostsAdmin();
+    }
+  }, [section, refreshBlogPostsAdmin]);
 
   function openNew() {
     setEditingId("new");

@@ -9,6 +9,8 @@ const errorHandler = require("./middleware/errorHandler");
 const coursesRouter = require("./routes/courses");
 const adminCoursesRouter = require("./routes/adminCourses");
 const authRouter = require("./routes/auth");
+const blogPublicRoutes = require("./routes/blogPublicRoutes");
+const adminBlogRoutes = require("./routes/adminBlogs");
 
 const app = express();
 
@@ -35,9 +37,11 @@ app.use("/api/admin", authRouter);
 
 // Public routes
 app.use("/api/courses", coursesRouter);
+app.use("/api/blog-posts", blogPublicRoutes);
 
 // Protected routes
 app.use("/api/admin/courses", adminCoursesRouter);
+app.use("/api/admin/blog-posts", adminBlogRoutes);
 
 // 404
 app.use((req, res) => {

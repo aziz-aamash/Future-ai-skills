@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import useScrollReveal from '../hooks/useScrollReveal.js';
-import BLOG_DATA from '../data/blogData.js';
+import { useData } from '../admin/context/DataContext.tsx';
+import { getBlogList } from '../data/blogHelpers.js';
 
 const CATEGORIES = [
   { key: 'all', label: 'All' },
@@ -15,8 +16,9 @@ const CATEGORIES = [
 export default function Blogs() {
   const [activeCat, setActiveCat] = useState('all');
   const revealRef = useScrollReveal([activeCat]);
-  const entries = Object.entries(BLOG_DATA);
-  const visible = activeCat === 'all' ? entries : entries.filter(([, p]) => p.cat === activeCat);
+  const { db } = useData();
+  const posts = getBlogList(db.blog_posts);
+  const visible = activeCat === 'all' ? posts : posts.filter((p) => p.cat === activeCat);
 
   return (
     <div ref={revealRef}>
@@ -43,14 +45,14 @@ export default function Blogs() {
           </div>
 
           <div className="grid grid-3">
-            {visible.map(([slug, post]) => (
-              <div className="card blog-card" key={slug}>
-                <img className="blog-thumb" src={`https://placehold.co/500x310/1C1917/F59E0B?text=${post.img}`} alt={`${post.title} thumbnail`} />
+            {visible.map((post) => (
+              <div className="card blog-card" key={post.slug}>
+                <img className="blog-thumb" src={`https://placehold.co/500x310/14213D/F59E0B?text=${post.img}`} alt={`${post.title} thumbnail`} />
                 <div className="blog-body">
                   <div className="blog-meta">{post.meta}</div>
                   <h3>{post.title}</h3>
                   <p>{post.teaser}</p>
-                  <Link to={`/blogs/${slug}`} className="link-arrow">Read more →</Link>
+                  <Link to={`/blogs/${post.slug}`} className="link-arrow">Read more →</Link>
                 </div>
               </div>
             ))}

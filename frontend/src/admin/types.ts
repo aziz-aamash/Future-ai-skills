@@ -93,15 +93,15 @@ export interface BlogPost {
   id: number;
   title: string;
   slug: string;
-  excerpt?: string;
+  excerpt?: string | null;
   content: string;
-  featured_image?: string;
-  category_id?: number | null;
-  author_id?: number | null;
+  featuredImage?: string | null;
+  category?: string | null;
+  authorId?: number | null;
   status: "draft" | "published";
-  published_at?: string;
-  created_at?: string;
-  updated_at?: string;
+  publishedAt?: string | null;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface ContactSubmission {
