@@ -307,6 +307,36 @@ p{margin:0 0 1em;color:var(--secondary);}
 .course-card:has(.course-tag.tag-design)::before{background:var(--tag-design);}
 .course-card:has(.course-tag.tag-freelancing)::before{background:var(--tag-freelancing);}
 .course-card:has(.course-tag.tag-ecommerce)::before{background:var(--tag-ecommerce);}
+/* course thumbnail (list + carousel cards) — bleeds to the card edges */
+.course-thumb{
+  display:block;position:relative;margin:-26px -26px 4px;
+  aspect-ratio:16/9;overflow:hidden;
+  border-radius:var(--radius-md) var(--radius-md) 0 0;
+  background:var(--tag-content-bg);
+}
+.course-thumb img{
+  width:100%;height:100%;object-fit:cover;display:block;
+  transition:transform .4s ease;
+}
+.course-card:hover .course-thumb img{transform:scale(1.04);}
+/* colored fallback shown when no image has been uploaded yet */
+.course-thumb-fallback{
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-mono);font-weight:700;font-size:2.6rem;color:#fff;
+  background:linear-gradient(135deg,var(--tag-content) 0%,var(--tag-content-bg) 340%);
+}
+.course-thumb.tag-marketing .course-thumb-fallback{background:linear-gradient(135deg,var(--tag-marketing) 0%,var(--tag-marketing-bg) 340%);}
+.course-thumb.tag-design .course-thumb-fallback{background:linear-gradient(135deg,var(--tag-design) 0%,var(--tag-design-bg) 340%);}
+.course-thumb.tag-freelancing .course-thumb-fallback{background:linear-gradient(135deg,var(--tag-freelancing) 0%,var(--tag-freelancing-bg) 340%);}
+.course-thumb.tag-ecommerce .course-thumb-fallback{background:linear-gradient(135deg,var(--tag-ecommerce) 0%,var(--tag-ecommerce-bg) 340%);}
+
+/* course detail page banner */
+.course-detail-banner{
+  aspect-ratio:16/6;overflow:hidden;border-radius:var(--radius-lg);
+  border:1px solid var(--card-border);box-shadow:var(--shadow-sm);
+}
+.course-detail-banner img{width:100%;height:100%;object-fit:cover;display:block;}
+@media(max-width:640px){.course-detail-banner{aspect-ratio:16/9;}}
 .course-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;}
 .course-tag{
   font-family:var(--font-mono);font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;
