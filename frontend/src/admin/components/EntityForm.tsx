@@ -1,7 +1,116 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import type { EntityConfig, FieldConfig } from "../config/entities";
 import type { AnyRecord } from "../types";
 import { useData } from "../context/DataContext";
+
+const MAX_IMAGE_BYTES = 3 * 1024 * 1024; // 3 MB
+
+function readFileAsDataUrl(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result));
+    reader.onerror = () => reject(reader.error);
+    reader.readAsDataURL(file);
+  });
+}
+
+/**
+ * Image upload field. Reads the chosen file into a base64 data URL that gets
+ * stored straight on the record. A URL box is offered as an alternative for
+ * images already hosted elsewhere (e.g. Cloudinary).
+ */
+function FileField({
+  field,
+  value,
+  onChange,
+}: {
+  field: FieldConfig;
+  value: any;
+  onChange: (v: any) => void;
+}) {
+  const inputRef = useRef<HTMLInputElement | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+
+  async function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setError(null);
+    if (!file.type.startsWith("image/")) {
+      setError("Please choose an image file.");
+      return;
+    }
+    if (file.size > MAX_IMAGE_BYTES) {
+      setError("Image is larger than 3 MB — please pick a smaller one.");
+      return;
+    }
+    try {
+      setBusy(true);
+      onChange(await readFileAsDataUrl(file));
+    } catch {
+      setError("Could not read that file. Try another image.");
+    } finally {
+      setBusy(false);
+      if (inputRef.current) inputRef.current.value = "";
+    }
+  }
+
+  const hasImage = typeof value === "string" && value.trim() !== "";
+
+  return (
+    <div className="field">
+      <label>
+        {field.label}
+        {field.required ? " *" : ""}
+      </label>
+
+      <div className="upload-row">
+        <div className={`upload-preview${hasImage ? "" : " is-empty"}`}>
+          {hasImage ? <img src={value} alt="Preview" /> : <span>No image</span>}
+        </div>
+
+        <div className="upload-controls">
+          <input
+            ref={inputRef}
+            type="file"
+            accept="image/*"
+            className="upload-input"
+            onChange={handleFile}
+          />
+          <div className="upload-buttons">
+            <button
+              type="button"
+              className="btn btn-outline btn-sm"
+              disabled={busy}
+              onClick={() => inputRef.current?.click()}
+            >
+              {busy ? "Reading…" : hasImage ? "Replace image" : "Upload image"}
+            </button>
+            {hasImage && (
+              <button
+                type="button"
+                className="btn btn-danger btn-sm"
+                onClick={() => onChange("")}
+              >
+                Remove
+              </button>
+            )}
+          </div>
+          <input
+            type="text"
+            className="upload-url"
+            placeholder="…or paste an image URL"
+            value={hasImage && value.startsWith("data:") ? "" : value ?? ""}
+            onChange={(e) => onChange(e.target.value)}
+          />
+        </div>
+      </div>
+
+      {field.hint && !error && <div className="upload-hint">{field.hint}</div>}
+      {error && <div className="upload-error">{error}</div>}
+    </div>
+  );
+}
 
 interface Props {
   entity: EntityConfig;
@@ -54,7 +163,6 @@ export default function EntityForm({ entity, record, onSubmit, onCancel }: Props
   const [values, setValues] = useState<Record<string, any>>(() => initialValues(entity.fields, record));
 
   // Only needed for course-select fields (Success Stories linking to a Course).
-  // Courses are already loaded in DataContext, so no extra fetch here.
   const { db } = useData();
   const courses = (db.courses as any) || [];
 
@@ -71,8 +179,6 @@ export default function EntityForm({ entity, record, onSubmit, onCancel }: Props
       if (f.special === "curriculum") return; // handled separately below
 
       if (f.special === "course-select") {
-        // Dropdown value is a string (or "" for none) — convert to a real
-        // number or null before it hits the courseId FK on the backend.
         const v = values[f.name];
         data[f.name] = v === "" || v === null || v === undefined ? null : Number(v);
         return;
@@ -188,22 +294,9 @@ function FieldInput({
     );
   }
 
- if (field.type === "file") {
-  return (
-    <div className="field">
-      <label>{field.label}</label>
-      <input
-        type="file"
-        accept="image/*"
-        onChange={(e) => onChange(e.target.files?.[0] ?? null)}
-      />
-      {value && typeof value === "string" && (
-        <img src={value} alt="Current" style={{ width: 60, height: 60, borderRadius: "50%", marginTop: 8, objectFit: "cover" }} />
-      )}
-      {field.hint && <small className="field-hint">{field.hint}</small>}
-    </div>
-  );
-}
+  if (field.type === "file") {
+    return <FileField field={field} value={value} onChange={onChange} />;
+  }
 
   return (
     <div className="field">
