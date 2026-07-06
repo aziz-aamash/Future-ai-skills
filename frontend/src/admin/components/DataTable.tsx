@@ -11,7 +11,7 @@ interface Props {
 }
 
 function Pill({ value, kind }: { value: any; kind: NonNullable<ColumnConfig["render"]> }) {
-  if ((kind as string) === "image") {
+  if (kind === "image") {
     return value ? (
       <img 
         src={String(value)} 
@@ -20,6 +20,17 @@ function Pill({ value, kind }: { value: any; kind: NonNullable<ColumnConfig["ren
       />
     ) : (
       <div style={{ width: 40, height: 40, borderRadius: "50%", background: "#e4dfd8", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16 }}>👤</div>
+    );
+  }
+  if (kind === "thumb") {
+    return value ? (
+      <img
+        src={String(value)}
+        alt="Thumbnail"
+        style={{ width: 64, height: 40, borderRadius: 6, objectFit: "cover", display: "block" }}
+      />
+    ) : (
+      <div style={{ width: 64, height: 40, borderRadius: 6, background: "#e4dfd8", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16 }}>🎓</div>
     );
   }
   if (kind === "boolean" || kind === "status") {
