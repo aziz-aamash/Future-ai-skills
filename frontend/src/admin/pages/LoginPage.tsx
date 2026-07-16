@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useAuth } from "../context/AuthContext";
-import logo from "../../assets/logo.jpeg";
+import logo from "../../assets/logo.png";
 
 export default function LoginPage() {
   const { login, loginError } = useAuth();
