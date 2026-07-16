@@ -28,7 +28,7 @@ export default function Header() {
       
 <Link to="/" className="brand" onClick={close}>
   <img
-    src="https://res.cloudinary.com/r2fk1fws/image/upload/v1784105100/logo.jpeg"
+    src="https://res.cloudinary.com/r2fk1fws/image/upload/v1784105100/logo_qz81cj.png"
     alt="Future AI Skills logo"
     className="brand-logo"
   />
