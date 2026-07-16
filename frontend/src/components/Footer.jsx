@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import logo from '../assets/logo.png';
+import logo from '../assets/logo.jpeg';
 
 /* Social links shown in the footer. Replace the `href` values with the
    academy's real profile URLs. The WhatsApp link uses the same number as
@@ -49,7 +49,7 @@ export default function Footer() {
             </p>
             <div className="footer-social">
               {SOCIALS.map((s) => (
-                <a
+                
                   key={s.label}
                   href={s.href}
                   className="footer-social-link"
